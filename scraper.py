@@ -32,5 +32,6 @@ for category in get_Categories(soup):
         categories.append((category_name, category_url))
 
 df = pd.DataFrame(categories, columns=["Category Name", "Category URL"])
-
 df.to_csv("categories.csv", index=False)
+
+print(f"Number of categories found: {len(categories)}")
