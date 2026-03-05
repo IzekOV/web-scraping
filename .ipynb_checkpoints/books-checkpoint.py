@@ -10,14 +10,14 @@ categories_df = pd.read_csv("categories.csv")
 
 def get_books(category_url):
     books = []
-    for category_url in categories_df["Category URL"]:
-        respond = requests.get(category_url)
-        if respond.status_code != 200:
-            print(f"Failed to retrienve the Webpage. Status code: {respond.status_code}")
+    while category_url:
+        response = requests.get(category_url)
+        if response.status_code != 200:
+            print(f"Failed to retrienve the Webpage. Status code: {response.status_code}")
             break
 
-        soup = BSoup.BeautifulSoup(respond.text, "html.parser")
-        book_elments = soup.find_all("a", class_="product_pod")
+        soup = BSoup.BeautifulSoup(response.text, "html.parser")
+        book_elments = soup.find_all("article", class_="product_pod")
 
         for book in book_elments:
             relativeimage_url = book.find("img")["src"]
@@ -37,7 +37,11 @@ def get_books(category_url):
             })
             return books
 
-for url in categories_df["Category URL"]:
-    books = get_books(url)
-    df = pd.DataFrame(books)
-    df.to_csv("books.csv", index=False)
+# Loop through each category and get books
+all_books = []
+for index, row in categories_df.iterrows():
+    books = get_books(row["Category URL"])
+    all_books.extend(books)
+
+df = pd.DataFrame(all_books, columns=["Title", "Price", "Availability", "URL", "Image URL"])
+df.to_csv("books.csv", index=False)

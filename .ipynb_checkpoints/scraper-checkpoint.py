@@ -31,7 +31,5 @@ for category in get_Categories(soup):
         category_url = url + link['href']
         categories.append((category_name, category_url))
 
-categories.pop(0) #remove the first element which is "Books" category
-
 df = pd.DataFrame(categories, columns=["Category Name", "Category URL"])
 df.to_csv("categories.csv", index=False)
