@@ -8,36 +8,27 @@ import scraper
 # Load categories from the CSV file
 categories_df = pd.read_csv("categories.csv")
 
-def get_books(category_url):
-    books = []
-    for category_url in categories_df["Category URL"]:
-        respond = requests.get(category_url)
-        if respond.status_code != 200:
-            print(f"Failed to retrienve the Webpage. Status code: {respond.status_code}")
-            break
+for category_name, category_url in categories_df[["Category Name", "Category URL"]].values:
+    category_name = category_name.strip()
+    respond = requests.get(category_url)
+    if respond.status_code != 200:
+        print(f"Failed to retrieve the webpage. Status code: {respond.status_code}")
+        exit()
+    
+    soup = BSoup.BeautifulSoup(respond.text, "html.parser")
 
-        soup = BSoup.BeautifulSoup(respond.text, "html.parser")
-        book_elments = soup.find_all("a", class_="product_pod")
+    books = soup.find_all("article", class_="product_pod")
 
-        for book in book_elments:
-            relativeimage_url = book.find("img")["src"]
-            image_url = urljoin(category_url, relativeimage_url)
-            relative_url = book.find("h3").find("a")["href"]
-            url = urljoin(category_url, relative_url)
-            title = book.find("h3").find("a")["title"]
-            price = book.find("p", class_="price_color").text.strip()
-            availability = book.find("p", class_="instock availability").text.strip()
+    Books_Data = []
+    for book in books:
+        title = book.h3.a['title']
+        price = book.find('p', class_='price_color').text
+        availability = book.find('p', class_='instock availability').text.strip()
 
-            books.append({
-                "Title": title,
-                "Price": price,
-                "Availability": availability,
-                "URL": url,
-                "Image URL": image_url
-            })
-            return books
-
-for url in categories_df["Category URL"]:
-    books = get_books(url)
-    df = pd.DataFrame(books)
-    df.to_csv("books.csv", index=False)
+        Books_Data.append({
+            "Title": title,
+            "Price": price,
+            "Availability": availability
+        })
+    df = pd.DataFrame(Books_Data)
+    df.to_csv(f"/workspaces/web-scraping-project/Books/{category_name}_books.csv", index=False)
