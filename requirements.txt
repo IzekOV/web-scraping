@@ -1,0 +1,5 @@
+Importent librarys in Python
+
+requests
+beautifulsoup4
+pandas
