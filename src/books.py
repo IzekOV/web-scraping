@@ -1,5 +1,3 @@
-from os import link
-from urllib.parse import urljoin
 import requests
 import bs4 as BSoup
 import pandas as pd
