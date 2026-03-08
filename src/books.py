@@ -1,32 +1,22 @@
-import requests
-import bs4 as BSoup
-import pandas as pd
-import scraper
+from src.scraper import get_pag
 
-# Load categories from the CSV file
-categories_df = pd.read_csv("categories.csv")
+def get_categories(url):
+    global categories
+    categories = []
 
-for category_name, category_url in categories_df[["Category Name", "Category URL"]].values:
-    category_name = category_name.strip()
-    respond = requests.get(category_url)
-    if respond.status_code != 200:
-        print(f"Failed to retrieve the webpage. Status code: {respond.status_code}")
-        exit()
+    soup = get_pag(url, None)
     
-    soup = BSoup.BeautifulSoup(respond.text, "html.parser")
+    def get_Categories(soup):
+        categories = soup.find_all("div", class_="side_categories")
+        return categories
+    
+    #extract category names and their URLs
+    for category in get_Categories(soup):
+        category_links = category.find_all("a")
+        for link in category_links:
+            category_name = link.get_text(strip=True)
+            category_url = url + link['href']
+            categories.append((category_name, category_url))
 
-    books = soup.find_all("article", class_="product_pod")
-
-    Books_Data = []
-    for book in books:
-        title = book.h3.a['title']
-        price = book.find('p', class_='price_color').text
-        availability = book.find('p', class_='instock availability').text.strip()
-
-        Books_Data.append({
-            "Title": title,
-            "Price": price,
-            "Availability": availability
-        })
-    df = pd.DataFrame(Books_Data)
-    df.to_csv(f"/workspaces/web-scraping-project/Books/{category_name}_books.csv", index=False)
+    categories.pop(0) #remove the first element which is "Books" category
+    return categories

@@ -1,6 +1,5 @@
-from src.scraper import get_pag
-import src.books as books
+from src.books import get_categories
 
 url = "https://books.toscrape.com/"
 
-get_pag(url)
+categories = get_categories(url)
