@@ -9,11 +9,6 @@ categories = get_categories(url)
 df = pd.DataFrame(categories, columns=['Category Name', 'Category URL'])
 #df.to_csv('categories.csv', index=False)
 
-if df.size > 0:
-    print(f"Categories have been saved to categories.csv, total categories: {len(df)}")
-else:
-    print("No categories found.")
-
-books = get_books("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
+books = get_books(url)
 dfb = pd.DataFrame(books, columns=['Book Title', 'Book URL'])
-dfb.to_csv('books.csv', index=False)
+dfb.to_csv('dataset.csv', index=False)

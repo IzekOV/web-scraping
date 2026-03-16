@@ -10,7 +10,7 @@ def get_pag(url, soup):
     respond = requests.get(url)
 
     if respond.status_code != 200:
-        print(f"Failed to retrieve the webpage. Status code: {respond.status_code}")
+        print(f"Error fetching page. Error code: {respond.status_code}")
         return None
     
     soup = BSoup.BeautifulSoup(respond.text, "html.parser")

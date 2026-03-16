@@ -1,5 +1,5 @@
 Importent librarys in Python
-
+tqdm
 requests
 beautifulsoup4
 pandas
