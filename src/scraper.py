@@ -4,7 +4,7 @@ import bs4 as BSoup
 
 soup = None
 
-def get_pag(url, soup):
+def send_request(url, soup):
 
     #send a get request to the URL
     respond = requests.get(url)

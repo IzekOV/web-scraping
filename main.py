@@ -10,5 +10,6 @@ df = pd.DataFrame(categories, columns=['Category Name', 'Category URL'])
 #df.to_csv('categories.csv', index=False)
 
 books = get_books(url)
-dfb = pd.DataFrame(books, columns=['Book Title', 'Book URL'])
+
+dfb = pd.DataFrame(books, columns=['Book Title', 'Book Price', 'Book Description', 'Book Price (Excl. Tax)', 'Book Price (Incl. Tax)', 'Book Price (Tax)', 'Book Reviews', 'Book Availability', 'Book Reviews', 'Book URL'])
 dfb.to_csv('dataset.csv', index=False)

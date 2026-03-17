@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from .scraper import get_pag
+=======
+from src.scraper import send_request
+>>>>>>> 208a44a (books details, too much progran time, fix it next time...)
 from urllib.parse import urljoin
 from tqdm import tqdm
 import time
@@ -13,7 +17,7 @@ def get_categories(url):
     global categories
     categories = []
 
-    soup = get_pag(url, None)
+    soup = send_request(url, None)
     
     #extract category names and their URLs
     for category in  soup.find_all("div", class_="side_categories"):
@@ -34,24 +38,37 @@ def get_books(url):
     PrograssBar = tqdm(desc="Prograss", unit=" books", colour="green")
 
     while url:
-        category_soup = get_pag(url, None)
+        category_soup = send_request(url, None)
 
         for book in category_soup.find_all("article", class_="product_pod"):
             relative_BURL = book.h3.a['href']
             book_url = urljoin(url, relative_BURL)
 
-            book_soup = get_pag(book_url, None)
+            book_soup = send_request(book_url, None)
 
-            for book_info in book_soup.find_all("div", class_="product_main"):
+            for book_info in book_soup.find_all("article", class_="product_page"):
+                #get book informations
                 book_title = book_info.h1.get_text(strip=True)
                 book_price = book_info.find("p", class_="price_color").get_text(strip=True)
-                book_description = book_info.find("p").get_text(strip=True) if book_info.find("p") else "No description available"
-                book_price_excl = book_info.find("td").find_next_sibling("td").get_text(strip=True)
-                book_price_incl = book_info.find("th", text="Price (incl. tax)").find_next_sibling("td").get_text(strip=True)
-                book_price_tax = book_info.find("th", text="Tax").find_next_sibling("td").get_text(strip=True)
-                books_reviews = book_info.find("th", text="Number of reviews").find_next_sibling("td").get_text(strip=True)
+                
+                book_description = book_info.find("div", id="product_description")
+
+                #some books dosent have description
+                if book_description:
+                    book_description = book_info.find("div", id="product_description").find_next_sibling("p").get_text(strip=True) if book_description else book_description == "No description"
+                else:
+                    book_description = "No description"
+
+                book_price_excl = book_info.find("table", class_="table table-striped").find("th", text="Price (excl. tax)").find_next_sibling("td").get_text(strip=True)
+                book_price_excl = book_price_excl.replace("Â","")
+                book_price_incl = book_info.find("table", class_="table table-striped").find("th", text="Price (incl. tax)").find_next_sibling("td").get_text(strip=True)
+                book_price_incl = book_price_incl.replace("Â","")
+                book_price_tax = book_info.find("table", class_="table table-striped").find("th", text="Tax").find_next_sibling("td").get_text(strip=True)
+                book_price_tax = book_price_tax.replace("Â","")
+                books_reviews = book_info.find("table", class_="table table-striped")
                 book_availability = book_info.find("p", class_="instock availability").get_text(strip=True)
-                book_reviews = book_info.find("p", class_="star-rating")['class'][1] #get the second class which indicates the rating
+                book_reviews = book_info.find("p", class_="star-rating")['class'][1]
+
             books.append((book_title, book_price, book_description, book_price_excl, book_price_incl, book_price_tax, books_reviews, book_availability, book_reviews, book_url))
 
             PrograssBar.update(1) #update the progress bar for each book found
@@ -62,6 +79,10 @@ def get_books(url):
         else:
             url = None
     PrograssBar.close()
+<<<<<<< HEAD
     return books
 
 get_books("https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html")
+=======
+    return books
+>>>>>>> 208a44a (books details, too much progran time, fix it next time...)
