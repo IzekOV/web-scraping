@@ -22,4 +22,4 @@ cd web-scraping
 
 pip install -r requirements.txt
 
-python scraper.py
+python main.py
