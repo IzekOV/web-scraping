@@ -1,4 +1,4 @@
-from scraper import get_pag
+from .scraper import get_pag
 from urllib.parse import urljoin
 from tqdm import tqdm
 import time
