@@ -1,4 +1,4 @@
-Importent librarys in Python
+#Importent librarys in Python
 tqdm
 requests
 beautifulsoup4
