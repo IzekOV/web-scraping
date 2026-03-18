@@ -1,15 +1,16 @@
 from src.books import get_books, get_categories
 import pandas as pd
+import numpy as np
 
 url = "https://books.toscrape.com/"
 
 categories = get_categories(url)
 
 # Create a DataFrame from the categories list
-df = pd.DataFrame(categories, columns=['Category Name', 'Category URL'])
+#df = pd.DataFrame(categories, columns=['Category Name', 'Category URL'])
 #df.to_csv('categories.csv', index=False)
 
 books = get_books(url)
 
-dfb = pd.DataFrame(books, columns=['Book Title', 'Book Price', 'Book Description', 'Book Price (Excl. Tax)', 'Book Price (Incl. Tax)', 'Book Price (Tax)', 'Book Reviews', 'Book Availability', 'Book Reviews', 'Book URL'])
-dfb.to_csv('dataset.csv', index=False)
+dfd = pd.DataFrame(books)
+dfd.to_csv('books.csv', index=False)

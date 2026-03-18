@@ -13,5 +13,6 @@ def send_request(url, soup):
         print(f"Error fetching page. Error code: {respond.status_code}")
         return None
     
+    respond.encoding = 'utf-8'  # Set the encoding to UTF-8
     soup = BSoup.BeautifulSoup(respond.text, "html.parser")
     return soup

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from .scraper import get_pag
-=======
 from src.scraper import send_request
->>>>>>> 208a44a (books details, too much progran time, fix it next time...)
 from urllib.parse import urljoin
 from tqdm import tqdm
 import time
@@ -25,7 +21,11 @@ def get_categories(url):
         for link in category_links:
             category_name = link.get_text(strip=True)
             category_url = url + link['href']
-            categories.append((category_name, category_url))
+
+            categories.append({
+                "Category Name": category_name,
+                "Category URL": category_url
+                })
 
     categories.pop(0) #remove the first element which is "Books" category
     return categories
@@ -33,6 +33,13 @@ def get_categories(url):
 def get_books(url):
     global books
     books = []
+    reviews_map = {
+        "One": 1,
+        "Two": 2,
+        "Three": 3,
+        "Four": 4,
+        "Five": 5
+        }
 
     #prograss bar (not importent for the code)
     PrograssBar = tqdm(desc="Prograss", unit=" books", colour="green")
@@ -50,26 +57,33 @@ def get_books(url):
                 #get book informations
                 book_title = book_info.h1.get_text(strip=True)
                 book_price = book_info.find("p", class_="price_color").get_text(strip=True)
+                book_price = float(book_price.replace('£', ''))
                 
                 book_description = book_info.find("div", id="product_description")
 
                 #some books dosent have description
                 if book_description:
-                    book_description = book_info.find("div", id="product_description").find_next_sibling("p").get_text(strip=True) if book_description else book_description == "No description"
+                    book_description_ns = book_info.find("div", id="product_description").find_next_sibling("p")
+                    book_description = book_description_ns.get_text(strip=True) if book_description else book_description == "No description"
                 else:
                     book_description = "No description"
 
-                book_price_excl = book_info.find("table", class_="table table-striped").find("th", text="Price (excl. tax)").find_next_sibling("td").get_text(strip=True)
-                book_price_excl = book_price_excl.replace("Â","")
-                book_price_incl = book_info.find("table", class_="table table-striped").find("th", text="Price (incl. tax)").find_next_sibling("td").get_text(strip=True)
-                book_price_incl = book_price_incl.replace("Â","")
-                book_price_tax = book_info.find("table", class_="table table-striped").find("th", text="Tax").find_next_sibling("td").get_text(strip=True)
-                book_price_tax = book_price_tax.replace("Â","")
-                books_reviews = book_info.find("table", class_="table table-striped")
+                book_description = book_description.split("...more")[0]
+                book_NBreviews = book_info.find("table", class_="table table-striped").find("th", text="Number of reviews").find_next_sibling("td").get_text(strip=True)
                 book_availability = book_info.find("p", class_="instock availability").get_text(strip=True)
-                book_reviews = book_info.find("p", class_="star-rating")['class'][1]
+                book_availability = int(re.search(r'\d+', book_availability).group())
+                book_reviews_st = book_info.find("p", class_="star-rating")['class'][1]
+                book_reviews = reviews_map[book_reviews_st]
 
-            books.append((book_title, book_price, book_description, book_price_excl, book_price_incl, book_price_tax, books_reviews, book_availability, book_reviews, book_url))
+            books.append({
+                "Book Title": book_title,
+                "Book Price(£)": book_price,
+                "Book Description": book_description,
+                "Number of reviews": book_NBreviews,
+                "Availability": book_availability,
+                "Reviews": book_reviews,
+                "URL": book_url
+                })
 
             PrograssBar.update(1) #update the progress bar for each book found
 
@@ -79,10 +93,4 @@ def get_books(url):
         else:
             url = None
     PrograssBar.close()
-<<<<<<< HEAD
     return books
-
-get_books("https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html")
-=======
-    return books
->>>>>>> 208a44a (books details, too much progran time, fix it next time...)
